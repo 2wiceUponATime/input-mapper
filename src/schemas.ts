@@ -86,7 +86,7 @@ export type Schemas = {
   [K in keyof typeof schemas]: z.infer<typeof schemas[K]>
 };
 
-if (import.meta.main) {
+if (import.meta.main && import.meta.env.DEV) {
   await saveSchema("input_config", InputConfig);
   await saveSchema("app_config"  , AppConfig  );
 }

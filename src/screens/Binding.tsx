@@ -16,7 +16,7 @@ export default function BindingScreen(props: ScreenProps & {
     const { bindings } = props;
 
     useEffect(() => {
-        function onContextMenu(event: PointerEvent) {
+        function onContextMenu(event: Event) {
             if (listening == -1) return;
             event.preventDefault();
         }
