@@ -1,0 +1,102 @@
+:root {
+  --background: #d0d0d0;
+  --background-2: #b0b0b0;
+  --foreground: black;
+  --foreground-2: #505050;
+  --margin: 10px;
+}
+
+body {
+  color: var(--foreground);
+}
+
+.screen > * {
+  margin: var(--margin);
+}
+
+table:has(.list) {
+  width: 100%;
+  margin: 0;
+}
+
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--background);
+  overflow: auto;
+}
+
+.icon {
+  width: 7mm;
+}
+
+.button {
+  cursor: pointer;
+  padding: 3mm;
+  border-radius: 4mm;
+}
+
+.button:hover {
+  background-color: var(--background-2);
+}
+
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: #0000;
+  transition: text-decoration-color 0.2s;
+}
+
+.link:hover {
+  text-decoration-color: var(--foreground);
+}
+
+.list {
+  margin-inline: 0px;
+  padding: 0;
+  list-style: none;
+}
+
+.list-item {
+  border-top: 1px solid var(--background-2);
+  padding-block: 5px;
+}
+
+.list-item:last-child {
+  border-bottom: 1px solid var(--background-2);
+}
+
+.list-item > * {
+  margin-inline: var(--margin);
+}
+
+.list-item, .flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.list-item > *:first-child {
+  flex-grow: 1;
+}
+
+.flex > * {
+  margin: 0;
+}
+
+.small {
+  font-size: 0.8em;
+  color: var(--foreground-2);
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.center {
+  text-align: center;
+}
