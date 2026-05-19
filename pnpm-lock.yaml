@@ -14,12 +14,6 @@ importers:
       '@tauri-apps/plugin-opener':
         specifier: ^2
         version: 2.5.4
-      fast-xml-parser:
-        specifier: ^5.8.0
-        version: 5.8.0
-      keycode:
-        specifier: ^2.2.1
-        version: 2.2.1
       preact:
         specifier: ^10.25.1
         version: 10.29.1
@@ -36,6 +30,9 @@ importers:
       '@types/node':
         specifier: ^25.8.0
         version: 25.8.0
+      fast-xml-parser:
+        specifier: ^5.8.0
+        version: 5.8.0
       typescript:
         specifier: ~5.6.2
         version: 5.6.3
@@ -691,9 +688,6 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
-
-  keycode@2.2.1:
-    resolution: {integrity: sha512-Rdgz9Hl9Iv4QKi8b0OlCRQEzp4AgVxyCtz5S/+VIHezDmrDhkp2N2TqBWOLz0/gbeREXOOiI9/4b8BY9uw2vFg==}
 
   kolorist@1.8.0:
     resolution: {integrity: sha512-Y+60/zizpJ3HRH8DCss+q95yr6145JXZo46OTpFvDZWLfRCE4qChOyk1b26nMaNpfHHgxagk9dXT5OP0Tfe+dQ==}
@@ -1382,8 +1376,6 @@ snapshots:
   jsesc@3.1.0: {}
 
   json5@2.2.3: {}
-
-  keycode@2.2.1: {}
 
   kolorist@1.8.0: {}
 

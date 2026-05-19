@@ -5,6 +5,8 @@ import type { Schemas } from "@/schemas";
 import { capitalize, humanizeBinding } from "@/utils/humanize";
 import { useEffect, useState } from "preact/hooks";
 import { isModifierKey, ticker } from "@/utils/events";
+import { JoypadEvent, startPollingJoypad } from "@/commands";
+import { Event as TauriEvent, listen } from "@tauri-apps/api/event";
 
 type Binding = Schemas["Binding"] | { type: null };
 
@@ -14,6 +16,8 @@ export default function BindingScreen(props: ScreenProps & {
     const [listening, setListening] = useState(-1);
     const tick = ticker();
     const { bindings } = props;
+    
+    startPollingJoypad();
 
     useEffect(() => {
         function onContextMenu(event: Event) {
@@ -22,7 +26,6 @@ export default function BindingScreen(props: ScreenProps & {
         }
         function onKeyDown(event: KeyboardEvent) {
             if (listening == -1 || !bindings || isModifierKey(event)) return;
-            console.log(event.key);
             event.preventDefault();
             bindings[listening] = {
                 type: "key",
@@ -31,7 +34,7 @@ export default function BindingScreen(props: ScreenProps & {
                 shift: event.shiftKey,
                 ctrl:  event.ctrlKey,
                 meta:  event.metaKey,
-            }
+            };
             setListening(-1);
         }
         function onMouseDown(event: MouseEvent) {
@@ -44,7 +47,7 @@ export default function BindingScreen(props: ScreenProps & {
                 shift: event.shiftKey,
                 ctrl:  event.ctrlKey,
                 meta:  event.metaKey,
-            }
+            };
             setListening(-1);
         }
         function onWheel(event: WheelEvent) {
@@ -64,7 +67,19 @@ export default function BindingScreen(props: ScreenProps & {
                 shift: event.shiftKey,
                 ctrl:  event.ctrlKey,
                 meta:  event.metaKey,
-            }
+            };
+            setListening(-1);
+        }
+        function onJoypadEvent({ payload: event }: TauriEvent<JoypadEvent>) {
+            if (listening == -1 || !bindings) return;
+            bindings[listening] = event.type == "button" ? {
+                type: "joypad_button",
+                joypad_button: event.index,
+            } : {
+                type: "joypad_axis",
+                joypad_axis: event.index,
+                direction: Math.sign(event.direction) as -1 | 1,
+            };
             setListening(-1);
         }
 
@@ -72,11 +87,13 @@ export default function BindingScreen(props: ScreenProps & {
         window.addEventListener("mouseup"    , onMouseDown  );
         window.addEventListener("contextmenu", onContextMenu);
         window.addEventListener("wheel"      , onWheel     );
+        const unlisten = listen<JoypadEvent>("joypad", onJoypadEvent);
         return () => {
             window.removeEventListener("keydown",     onKeyDown    );
             window.removeEventListener("mouseup",     onMouseDown  );
             window.removeEventListener("contextmenu", onContextMenu);
             window.removeEventListener("wheel"      , onWheel     );
+            unlisten.then(value => value());
         };
     });
 
@@ -89,6 +106,7 @@ export default function BindingScreen(props: ScreenProps & {
                                 <div
                                     className="link"
                                     onMouseUp={listening == -1 ? e => {
+                                        startPollingJoypad();
                                         e.stopPropagation();
                                         e.preventDefault();
                                         setListening(index);

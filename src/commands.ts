@@ -1,7 +1,16 @@
 import type { z } from "zod";
 import { invoke } from "@tauri-apps/api/core"
 
-type ListEntry = {
+export type JoypadEvent = {
+    type: "button";
+    index: number;
+} | {
+    type: "axis";
+    index: number;
+    direction: number;
+}
+
+export type ListEntry = {
     name: string;
     is_dir: boolean;
 }
@@ -24,4 +33,8 @@ export async function write(file: string, content: string) {
 
 export function writeJSON(file: string, content: any) {
     return write(file, JSON.stringify(content));
+}
+
+export function startPollingJoypad() {
+    return invoke("start_polling_joypad");
 }

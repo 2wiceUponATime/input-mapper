@@ -57,7 +57,7 @@ export default function App() {
     setInputConfigs(await getInputConfigs(names, appConfigs));
   }
 
-  useEffect(() => { main(); }, [])
+  useEffect(() => { main(); }, []);
 
   return (
     <main className="screen">
