@@ -16,7 +16,7 @@ export type ListEntry = {
 }
 
 export async function read(file: string) {
-    return invoke("read", { file }) as Promise<string>;
+    return invoke<string>("read", { file });
 }
 
 export async function readJSON<T extends z.ZodType>(file: string, schema: T): Promise<z.infer<T>> {
@@ -24,11 +24,11 @@ export async function readJSON<T extends z.ZodType>(file: string, schema: T): Pr
 }
 
 export async function list(dir: string) {
-    return invoke("list", { dir }) as Promise<ListEntry[]>;
+    return invoke<ListEntry[]>("list", { dir });
 }
 
 export async function write(file: string, content: string) {
-    return invoke("write", { file, content }) as Promise<void>;
+    return invoke<void>("write", { file, content });
 }
 
 export function writeJSON(file: string, content: any) {
@@ -36,5 +36,5 @@ export function writeJSON(file: string, content: any) {
 }
 
 export function startPollingJoypad() {
-    return invoke("start_polling_joypad");
+    return invoke<void>("start_polling_joypad");
 }

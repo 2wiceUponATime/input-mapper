@@ -24,7 +24,11 @@ export default function BindingScreen(props: ScreenProps & {
             if (listening == -1) return;
             event.preventDefault();
         }
+        let meta = false;
         function onKeyDown(event: KeyboardEvent) {
+            if (["OSLeft", "MetaLeft", "Super"].includes(event.key)) {
+                meta = true;
+            }
             if (listening == -1 || !bindings || isModifierKey(event)) return;
             event.preventDefault();
             bindings[listening] = {
@@ -33,9 +37,14 @@ export default function BindingScreen(props: ScreenProps & {
                 alt:   event.altKey,
                 shift: event.shiftKey,
                 ctrl:  event.ctrlKey,
-                meta:  event.metaKey,
+                meta,
             };
             setListening(-1);
+        }
+        function onKeyUp(event: KeyboardEvent) {
+            if (["OSLeft", "MetaLeft", "Super"].includes(event.key)) {
+                meta = false;
+            }
         }
         function onMouseDown(event: MouseEvent) {
             if (listening == -1 || !bindings) return;
@@ -46,7 +55,7 @@ export default function BindingScreen(props: ScreenProps & {
                 alt:   event.altKey,
                 shift: event.shiftKey,
                 ctrl:  event.ctrlKey,
-                meta:  event.metaKey,
+                meta,
             };
             setListening(-1);
         }
@@ -66,7 +75,7 @@ export default function BindingScreen(props: ScreenProps & {
                 alt:   event.altKey,
                 shift: event.shiftKey,
                 ctrl:  event.ctrlKey,
-                meta:  event.metaKey,
+                meta,
             };
             setListening(-1);
         }
@@ -84,12 +93,14 @@ export default function BindingScreen(props: ScreenProps & {
         }
 
         window.addEventListener("keydown"    , onKeyDown    );
+        window.addEventListener("keyup"      , onKeyUp      );
         window.addEventListener("mouseup"    , onMouseDown  );
         window.addEventListener("contextmenu", onContextMenu);
-        window.addEventListener("wheel"      , onWheel     );
+        window.addEventListener("wheel"      , onWheel      );
         const unlisten = listen<JoypadEvent>("joypad", onJoypadEvent);
         return () => {
             window.removeEventListener("keydown",     onKeyDown    );
+            window.removeEventListener("keyup"      , onKeyUp      );
             window.removeEventListener("mouseup",     onMouseDown  );
             window.removeEventListener("contextmenu", onContextMenu);
             window.removeEventListener("wheel"      , onWheel     );
