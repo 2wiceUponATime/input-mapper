@@ -11,7 +11,11 @@ export default function Screen({ children, title, onClose }: ScreenProps) {
     return (
         <div className="screen">
             <div className="flex">
-                <img className="icon button" src={back} onClick={onClose} />
+                <img className="icon button" src={back} onMouseUp={event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onClose && onClose();
+                }} />
                 {title && <h1>{title}</h1>}
             </div>
             {children}

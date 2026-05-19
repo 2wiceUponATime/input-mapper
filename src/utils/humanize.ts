@@ -1,36 +1,19 @@
 import type { Schemas } from "@/schemas";
 
-const joypadButtons: Record<number, string> = {
-    0: "South",
-    1: "East",
-    2: "West",
-    3: "North",
-    4: "Select",
-    5: "Mode",
-    6: "Start",
-    7: "Left Stick",
-    8: "Right Stick",
-    9: "Left Shoulder",
-    10: "Right Shoulder",
-    11: "D-Pad Up",
-    12: "D-Pad Down",
-    13: "D-Pad Left",
-    14: "D-Pad Right",
-}
-
 const axis: Record<number, string> = {
     [-1]: "Negative",
       1 : "Positive",
 }
 
-const axisX: Record<number, string> = {
-    [-1]: "Left",
-      1 : "Right",
-}
-
-const axisY: Record<number, string> = {
-    [-1]: "Down",
-      1 : "Up",
+const axisXY: Record<string, Record<number, string>> = {
+    X: {
+        [-1]: "Left",
+        1 : "Right",
+    },
+    Y: {
+        [-1]: "Down",
+        1 : "Up",
+    }
 }
 
 function getPrefix(binding: Schemas["BindingKey" | "BindingMouse" | "BindingMouseWheel"]) {
@@ -51,16 +34,16 @@ function humanizeKey(code: string) {
         code = match + code.replace(directionSuffixRegex, "");
     }
     if (code.match(/^F\d+$/)) return code;
-    return code.replace(/(?<!^)(?=[A-Z\d])/g, " ");
+    return humanizeCamelCase(code);
 }
 
 export function humanizeBinding(binding: Schemas["Binding"]) {
     switch (binding.type) {
         case "key":
-            return `${getPrefix(binding)}${humanizeKey(binding.code)} (Physical QWERTY key)`
+            return `${getPrefix(binding)}${humanizeKey(binding.name)} (QWERTY position)`
         case "mouse":
             const prefix = getPrefix(binding);
-            switch (binding.mouse_button) {
+            switch (binding.index) {
                 case 0:
                     return prefix + "Mouse Left"
                 case 1:
@@ -68,34 +51,20 @@ export function humanizeBinding(binding: Schemas["Binding"]) {
                 case 2:
                     return prefix + "Mouse Right"
                 default:
-                    return `Mouse button: ${prefix}${binding.mouse_button}`
+                    return `Mouse button: ${prefix}${binding.index}`
             }
         case "mouse_wheel":
             return `${getPrefix(binding)}Mouse Wheel ${capitalize(binding.direction)}`
         case "joypad_button":
-            const index = binding.joypad_button;
-            const name = joypadButtons[index];
-            return name
-                ? `${name} - Joypad`
-                : `Button ${index} - Joypad`
+            return `${humanizeCamelCase(binding.name)} (Joypad)`
         case "joypad_axis":
-            switch (binding.joypad_axis) {
-                case 0:
-                    return  `Left Stick ${axisX[binding.direction]} (Joypad)`;
-                case 1:
-                    return  `Left Stick ${axisY[binding.direction]} (Joypad)`;
-                case 2:
-                    return `Right Stick ${axisX[binding.direction]} (Joypad)`;
-                case 3:
-                    return `Right Stick ${axisY[binding.direction]} (Joypad)`;
-                case 4:
-                    if (binding.direction > 0) return  "Left Trigger (Joypad)";
-                    break;
-                case 5:
-                    if (binding.direction > 0) return "Right Trigger (Joypad)";
-                    break;
+            const split = binding.name.split(/(?=[XY]$)/);
+            if (split.length > 1) {
+                const axis = humanizeCamelCase(split[0]);
+                const direction = axisXY[split[1]][binding.direction];
+                return `${axis} ${direction} (Joypad)`
             }
-            return `Axis ${binding.joypad_axis} ${axis[binding.direction]} (Joypad)`
+            return `Axis ${binding.name} ${axis[binding.direction]} (Joypad)`
     }
 }
 
@@ -106,4 +75,8 @@ export function capitalize(input: string) {
 
 export function humanizeSnakeCase(input: string) {
     return input.split("_").map(capitalize).join(" ");
+}
+
+function humanizeCamelCase(input: string) {
+    return input.replace(/(?<!^)([A-Z0-9])/g, " $1");
 }

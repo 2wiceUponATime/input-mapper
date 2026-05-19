@@ -26,29 +26,29 @@
                         "type": "string",
                         "const": "key"
                       },
-                      "ctrl": {
-                        "type": "boolean"
-                      },
                       "alt": {
                         "type": "boolean"
                       },
                       "shift": {
                         "type": "boolean"
                       },
+                      "ctrl": {
+                        "type": "boolean"
+                      },
                       "meta": {
                         "type": "boolean"
                       },
-                      "code": {
+                      "name": {
                         "type": "string"
                       }
                     },
                     "required": [
                       "type",
-                      "ctrl",
                       "alt",
                       "shift",
+                      "ctrl",
                       "meta",
-                      "code"
+                      "name"
                     ],
                     "additionalProperties": false
                   },
@@ -59,19 +59,19 @@
                         "type": "string",
                         "const": "mouse"
                       },
-                      "ctrl": {
-                        "type": "boolean"
-                      },
                       "alt": {
                         "type": "boolean"
                       },
                       "shift": {
                         "type": "boolean"
                       },
+                      "ctrl": {
+                        "type": "boolean"
+                      },
                       "meta": {
                         "type": "boolean"
                       },
-                      "mouse_button": {
+                      "index": {
                         "type": "integer",
                         "minimum": 0,
                         "maximum": 9007199254740991
@@ -79,11 +79,50 @@
                     },
                     "required": [
                       "type",
-                      "ctrl",
                       "alt",
                       "shift",
+                      "ctrl",
                       "meta",
-                      "mouse_button"
+                      "index"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "mouse_wheel"
+                      },
+                      "alt": {
+                        "type": "boolean"
+                      },
+                      "shift": {
+                        "type": "boolean"
+                      },
+                      "ctrl": {
+                        "type": "boolean"
+                      },
+                      "meta": {
+                        "type": "boolean"
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "up",
+                          "down",
+                          "left",
+                          "right"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "alt",
+                      "shift",
+                      "ctrl",
+                      "meta",
+                      "direction"
                     ],
                     "additionalProperties": false
                   },
@@ -94,15 +133,13 @@
                         "type": "string",
                         "const": "joypad_button"
                       },
-                      "joypad_button": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 9007199254740991
+                      "name": {
+                        "type": "string"
                       }
                     },
                     "required": [
                       "type",
-                      "joypad_button"
+                      "name"
                     ],
                     "additionalProperties": false
                   },
@@ -113,10 +150,8 @@
                         "type": "string",
                         "const": "joypad_axis"
                       },
-                      "joypad_axis": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 9007199254740991
+                      "name": {
+                        "type": "string"
                       },
                       "direction": {
                         "anyOf": [
@@ -133,7 +168,7 @@
                     },
                     "required": [
                       "type",
-                      "joypad_axis",
+                      "name",
                       "direction"
                     ],
                     "additionalProperties": false

@@ -24,8 +24,8 @@ struct ListEntry {
 
 #[derive(Clone)]
 enum JoypadEvent {
-    Button(i16),
-    Axis  (i16, f32),
+    Button(Button),
+    Axis  (Axis, f32),
 }
 
 impl Serialize for JoypadEvent {
@@ -34,16 +34,16 @@ impl Serialize for JoypadEvent {
         S: serde::Serializer
     {
         match self {
-            Self::Button(index) => {
+            Self::Button(button) => {
                 let mut s = serializer.serialize_struct("JoypadEvent", 2)?;
                 s.serialize_field("type", "button")?;
-                s.serialize_field("index", index)?;
+                s.serialize_field("value", &format!("{:?}", button))?;
                 s.end()
             }
-            Self::Axis(index, direction) => {
+            Self::Axis(axis, direction) => {
                 let mut s = serializer.serialize_struct("JoypadEvent", 3)?;
                 s.serialize_field("type", "axis")?;
-                s.serialize_field("index", index)?;
+                s.serialize_field("value", &format!("{:?}", axis))?;
                 s.serialize_field("direction", direction)?;
                 s.end()
             },
@@ -101,30 +101,6 @@ fn write(file: &str, content: &str) -> Result<(), String> {
     Ok(())
 }
 
-fn button_to_event(button: Button) -> Option<JoypadEvent> {
-    use Button::*;
-    Some(JoypadEvent::Button(match button {
-        South => 0,
-        East  => 1,
-        North => 3,
-        West  => 2,
-        LeftTrigger   => 9,
-        LeftTrigger2  => return Some(JoypadEvent::Axis(4, 1.0)),
-        RightTrigger  => 10,
-        RightTrigger2 => return Some(JoypadEvent::Axis(5, 1.0)),
-        Select => 4,
-        Start  => 6,
-        Mode   => 5,
-        LeftThumb  => 7,
-        RightThumb => 8,
-        DPadUp    => 11,
-        DPadDown  => 12,
-        DPadLeft  => 13,
-        DPadRight => 14,
-        _ => return None,
-    }))
-}
-
 fn axis_to_event(axis: Axis, value: f32) -> Option<JoypadEvent> {
     const THRESHOLD: f32 = 0.7;
 
@@ -132,13 +108,7 @@ fn axis_to_event(axis: Axis, value: f32) -> Option<JoypadEvent> {
         return None;
     }
 
-    Some(JoypadEvent::Axis(match axis {
-        Axis::LeftStickX  => 0,
-        Axis::LeftStickY  => 1,
-        Axis::RightStickX => 2,
-        Axis::RightStickY => 3,
-        _ => return None
-    }, value))
+    Some(JoypadEvent::Axis(axis, value))
 }
 
 #[tauri::command]
@@ -153,16 +123,13 @@ fn start_polling_joypad(app: AppHandle, state: State<PollingState>) -> Result<()
 
     let mut gilrs = handle!(Gilrs::new());
 
-    std::thread::spawn(move || {
+    std::thread::spawn(move || -> Result<(), tauri::Error> {
         loop {
             if let Some(e) = gilrs.next_event() {
                 match e.event {
-                    ButtonPressed(button, _) => match button_to_event(button) {
-                        Some(value) => app.emit("joypad", value).unwrap(),
-                        None => continue,
-                    },
+                    ButtonPressed(button, _) => app.emit("joypad", JoypadEvent::Button(button))?,
                     AxisChanged(axis, value, _) => match axis_to_event(axis, value) {
-                        Some(value) => app.emit("joypad", value).unwrap(),
+                        Some(value) => app.emit("joypad", value)?,
                         None => continue,
                     },
                     _ => continue,

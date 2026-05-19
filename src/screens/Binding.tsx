@@ -26,14 +26,14 @@ export default function BindingScreen(props: ScreenProps & {
         }
         let meta = false;
         function onKeyDown(event: KeyboardEvent) {
-            if (["OSLeft", "MetaLeft", "Super"].includes(event.key)) {
+            if (["Meta", "Super", "OS"].includes(event.key)) {
                 meta = true;
             }
             if (listening == -1 || !bindings || isModifierKey(event)) return;
             event.preventDefault();
             bindings[listening] = {
                 type: "key",
-                code: event.code,
+                name: event.code,
                 alt:   event.altKey,
                 shift: event.shiftKey,
                 ctrl:  event.ctrlKey,
@@ -51,7 +51,7 @@ export default function BindingScreen(props: ScreenProps & {
             event.preventDefault();
             bindings[listening] = {
                 type: "mouse",
-                mouse_button: event.button,
+                index: event.button,
                 alt:   event.altKey,
                 shift: event.shiftKey,
                 ctrl:  event.ctrlKey,
@@ -80,13 +80,14 @@ export default function BindingScreen(props: ScreenProps & {
             setListening(-1);
         }
         function onJoypadEvent({ payload: event }: TauriEvent<JoypadEvent>) {
+            console.log(event);
             if (listening == -1 || !bindings) return;
             bindings[listening] = event.type == "button" ? {
                 type: "joypad_button",
-                joypad_button: event.index,
+                name: event.value,
             } : {
                 type: "joypad_axis",
-                joypad_axis: event.index,
+                name: event.value,
                 direction: Math.sign(event.direction) as -1 | 1,
             };
             setListening(-1);
