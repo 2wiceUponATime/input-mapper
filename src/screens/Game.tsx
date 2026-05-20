@@ -15,13 +15,18 @@ export default function GameScreen(props: ScreenProps & {
     inputConfig: Schemas["InputConfig"] | null;
     onSave: () => unknown;
 }) {
-    const [bindingSetScreen, setBindingSetScreen] = useState<[string, Schemas["BindingSet"]] | null>(null);
+    const [bindingSetScreen, setBindingSetScreen] = useState<
+        [string, Schemas["BindingSet"]] | null
+    >(null);
     const tick = ticker();
 
     const { appConfig, inputConfig, onSave } = props;
 
     if (appConfig && inputConfig) {
-        const clamped = clamp(inputConfig.active_set, 0, inputConfig.sets.length - 1);
+        const clamped = clamp(
+            inputConfig.active_set,
+            0, inputConfig.sets.length - 1
+        );
         if (inputConfig.active_set != clamped) {
             inputConfig.active_set = clamped;
             return;
@@ -40,7 +45,7 @@ export default function GameScreen(props: ScreenProps & {
                         <div className="flex gap-small">
                             <input
                                 type="checkbox"
-                                checked={index == inputConfig.active_set}
+                                checked={index === inputConfig.active_set}
                                 onClick={event => event.stopPropagation()}
                                 onChange={event => {
                                     if (event.currentTarget.checked) {
@@ -54,47 +59,45 @@ export default function GameScreen(props: ScreenProps & {
                             />
                             Active
                         </div>
-                        <div>
-                            <img
-                                className="icon button"
-                                src={edit}
-                                onClick={event => {
-                                    stopEvent(event);
-                                    entry[0] = prompt("Enter new name", entry[0]) ?? entry[0];
-                                    onSave();
-                                    tick();
-                                }}
-                            />
-                        </div>
-                        <div>
-                            <img
-                                className="icon button"
-                                src={deleteIcon}
-                                onClick={event => {
-                                    stopEvent(event);
-                                    if (!appConfig) return;
-                                    inputConfig.sets.splice(index, 1);
-                                    if (inputConfig.active_set == index) {
-                                        inputConfig.active_set = 0;
-                                        if (inputConfig.sets.length == 0) {
-                                            const set = Object.fromEntries(
-                                                Object.entries(appConfig.actions)
-                                                .map(([k, v]) => [k, v.default])
-                                            )
-                                            inputConfig.sets.push(["Default", set]);
-                                            tick();
-                                        }
-                                    } else if (inputConfig.active_set > index) {
-                                        inputConfig.active_set -= 1;
+                        <img
+                            className="icon button"
+                            src={edit}
+                            onClick={event => {
+                                stopEvent(event);
+                                entry[0] = prompt(
+                                    "Enter new name",
+                                    entry[0],
+                                ) ?? entry[0];
+                                onSave();
+                                tick();
+                            }}
+                        />
+                        <img
+                            className="icon button"
+                            src={deleteIcon}
+                            onClick={event => {
+                                stopEvent(event);
+                                if (!appConfig) return;
+                                inputConfig.sets.splice(index, 1);
+                                if (inputConfig.active_set === index) {
+                                    inputConfig.active_set = 0;
+                                    if (inputConfig.sets.length === 0) {
+                                        const set = Object.fromEntries(
+                                            Object.entries(appConfig.actions)
+                                            .map(([k, v]) => [k, v.default])
+                                        )
+                                        inputConfig.sets
+                                            .push(["Default", set]);
+                                        tick();
                                     }
-                                    onSave();
-                                    tick();
-                                }}
-                            />
-                        </div>
-                        <div>
-                            <img className="icon button" src={forward} />
-                        </div>
+                                } else if (inputConfig.active_set > index) {
+                                    inputConfig.active_set -= 1;
+                                }
+                                onSave();
+                                tick();
+                            }}
+                        />
+                        <img className="icon button" src={forward} />
                     </li>
                 ))}
             </ul>

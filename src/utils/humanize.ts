@@ -16,7 +16,9 @@ const axisXY: Record<string, Record<number, string>> = {
     }
 }
 
-function getPrefix(binding: Schemas["BindingKey" | "BindingMouse" | "BindingMouseWheel"]) {
+function getPrefix(
+    binding: Schemas["BindingKey" | "BindingMouse" | "BindingMouseWheel"]
+) {
     let result = "";
     if (binding.alt  ) result += "Alt + ";
     if (binding.shift) result += "Shift + ";
@@ -40,7 +42,8 @@ function humanizeKey(code: string) {
 export function humanizeBinding(binding: Schemas["Binding"]) {
     switch (binding.type) {
         case "key":
-            return `${getPrefix(binding)}${humanizeKey(binding.name)} (QWERTY key position)`
+            return `\
+${getPrefix(binding)}${humanizeKey(binding.name)} (QWERTY key position)`
         case "mouse":
             const prefix = getPrefix(binding);
             switch (binding.index) {
@@ -54,7 +57,8 @@ export function humanizeBinding(binding: Schemas["Binding"]) {
                     return `Mouse button: ${prefix}${binding.index}`
             }
         case "mouse_wheel":
-            return `${getPrefix(binding)}Mouse Wheel ${capitalize(binding.direction)}`
+            return `\
+${getPrefix(binding)}Mouse Wheel ${capitalize(binding.direction)}`
         case "joypad_button":
             return `${humanizeCamelCase(binding.name)} (Joypad)`
         case "joypad_axis":

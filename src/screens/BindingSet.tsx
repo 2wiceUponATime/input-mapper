@@ -17,23 +17,25 @@ export default function BindingSetScreen(props: ScreenProps & {
     return (
         <Screen {...props}>
             <ul className="list">
-                {bindings && Object.entries(bindings).map(([name, bindings]) => (
-                    <li
-                        className="list-item link"
-                        onClick={() => setBindingScreen([name, bindings])}
-                    >
-                        <div>{humanizeSnakeCase(name)}</div>
-                        <div>
+                {bindings && Object
+                    .entries(bindings)
+                    .map(([name, bindings]) => (
+                        <li
+                            className="list-item link"
+                            onClick={() => setBindingScreen([name, bindings])}
+                        >
+                            <div>{humanizeSnakeCase(name)}</div>
                             <img className="icon button" src={forward} />
-                        </div>
-                    </li>
-                ))}
+                        </li>
+                    ))
+                }
             </ul>
             {bindingScreen && <BindingScreen 
                 title={`Edit binding: ${humanizeSnakeCase(bindingScreen[0])}`}
                 onClose={() => {
                     if (bindings) {
-                        bindings[bindingScreen[0]] = bindingScreen[1].filter(binding => binding.type);
+                        bindings[bindingScreen[0]] = bindingScreen[1]
+                            .filter(binding => binding.type);
                     }
                     setBindingScreen(null);
                     onSave();

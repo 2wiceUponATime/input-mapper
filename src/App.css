@@ -14,6 +14,11 @@ input[type="checkbox"] {
   width: 5mm;
   height: 5mm;
 }
+
+input[type="checkbox"], .button, .link, .pointer {
+  cursor: pointer;
+}
+
 .screen > * {
   margin: var(--margin);
 }
@@ -39,7 +44,6 @@ table:has(.list) {
 }
 
 .button {
-  cursor: pointer;
   padding: 3mm;
   border-radius: 4mm;
 }
@@ -49,7 +53,6 @@ table:has(.list) {
 }
 
 .link {
-  cursor: pointer;
   text-decoration: underline;
   text-decoration-color: #0000;
   transition: text-decoration-color 0.2s;
@@ -66,11 +69,16 @@ table:has(.list) {
 }
 
 .list-item {
+  background-color: var(--background);
   border-top: 1px solid var(--background-2);
   padding-block: 5px;
 }
 
-.list-item:last-child {
+.drag-placeholder {
+  padding-block: 0px;
+}
+
+.list-item:last-child, .list-item.bottom {
   border-bottom: 1px solid var(--background-2);
 }
 
@@ -92,7 +100,11 @@ table:has(.list) {
   gap: 1mm;
 }
 
-.list-item > *:first-child {
+.grow {
+  flex-grow: 1;
+}
+
+.list-item:not(:has(.grow)) > *:first-child {
   flex-grow: 1;
 }
 

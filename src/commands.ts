@@ -25,7 +25,9 @@ export async function read(file: string) {
     return invoke<string>("read", { file });
 }
 
-export async function readJSON<T extends z.ZodType>(file: string, schema: T): Promise<z.infer<T>> {
+export async function readJSON<
+    T extends z.ZodType
+>(file: string, schema: T): Promise<z.infer<T>> {
     return schema.parse(JSON.parse(await read(file)));
 }
 

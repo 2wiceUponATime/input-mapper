@@ -27,9 +27,15 @@ async function getInputConfigs(names: string[], appConfigs: AppConfigs) {
   const result: InputConfigs = {}
   for (const name of names) {
     try {
-      result[name] = await readJSON(`configs/${name}.json`, schemas.InputConfig);
+      result[name] = await readJSON(
+        `configs/${name}.json`,
+        schemas.InputConfig
+      );
     } catch(err) {
-      if (!(typeof err == "string" && err.includes("No such file or directory"))) {
+      if (!(
+        typeof err === "string"
+        && err.includes("No such file or directory")
+      )) {
         throw err;
       }
       const bindingSet = Object.fromEntries(
@@ -69,9 +75,7 @@ export default function App() {
             onClick={() => setGameScreen(name)}
           >
             <div>{config.name}</div>
-            <div>
-              <img className="icon button" src={forward} />
-            </div>
+            <img className="icon button" src={forward} />
           </li>
         ))}
       </ul>
@@ -82,7 +86,10 @@ export default function App() {
         onClose={() => setGameScreen(null)}
         onSave={async () => {
           if (!inputConfigs) return;
-          await writeJSON(`configs/${gameScreen}.json`, inputConfigs[gameScreen])
+          await writeJSON(
+            `configs/${gameScreen}.json`,
+            inputConfigs[gameScreen]
+          )
         }}
       />}
     </main>
