@@ -10,6 +10,10 @@ body {
   color: var(--foreground);
 }
 
+input[type="checkbox"] {
+  width: 5mm;
+  height: 5mm;
+}
 .screen > * {
   margin: var(--margin);
 }
@@ -70,14 +74,22 @@ table:has(.list) {
   border-bottom: 1px solid var(--background-2);
 }
 
-.list-item > * {
-  margin-inline: var(--margin);
+.list-item > *:first-child {
+  margin-left: var(--margin);
+}
+
+.list-item > *:last-child {
+  margin-right: var(--margin);
 }
 
 .list-item, .flex {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 3mm;
+}
+
+.gap-small {
+  gap: 1mm;
 }
 
 .list-item > *:first-child {

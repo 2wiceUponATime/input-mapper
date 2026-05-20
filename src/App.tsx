@@ -61,7 +61,7 @@ export default function App() {
 
   return (
     <main className="screen">
-      <h1>Apps</h1>
+      <h1>Apps</ h1>
       <ul className="list">
         {appConfigs && Object.entries(appConfigs).map(([name, config]) => (
           <li
@@ -77,6 +77,7 @@ export default function App() {
       </ul>
       {gameScreen && <GameScreen
         title={appConfigs && `Binding sets: ${appConfigs[gameScreen].name}`}
+        appConfig  ={appConfigs   && appConfigs  [gameScreen]}
         inputConfig={inputConfigs && inputConfigs[gameScreen]}
         onClose={() => setGameScreen(null)}
         onSave={async () => {

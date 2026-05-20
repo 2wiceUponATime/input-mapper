@@ -7,7 +7,7 @@ import { humanizeSnakeCase } from "@/utils/humanize";
 
 export default function BindingSetScreen(props: ScreenProps & {
     bindings: Schemas["BindingSet"] | null;
-    onSave?: () => unknown;
+    onSave: () => unknown;
 }) {
     const [bindingScreen, setBindingScreen] = useState<
         [string, Schemas["Binding"][]] | null
@@ -36,8 +36,9 @@ export default function BindingSetScreen(props: ScreenProps & {
                         bindings[bindingScreen[0]] = bindingScreen[1].filter(binding => binding.type);
                     }
                     setBindingScreen(null);
-                    onSave && onSave();
+                    onSave();
                 }}
+                onSave={onSave}
                 bindings={bindingScreen[1]}
             />}
         </Screen>

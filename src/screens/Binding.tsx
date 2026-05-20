@@ -4,7 +4,8 @@ import create from "@/assets/icons/create.svg";
 import type { Schemas } from "@/schemas";
 import { capitalize, humanizeBinding } from "@/utils/humanize";
 import { useEffect, useState } from "preact/hooks";
-import { isModifierKey, ticker } from "@/utils/events";
+import { isModifierKey, stopEvent } from "@/utils/events";
+import { ticker } from "@/utils/utils";
 import { JoypadEvent, startPollingJoypad } from "@/commands";
 import { Event as TauriEvent, listen } from "@tauri-apps/api/event";
 
@@ -12,12 +13,13 @@ type Binding = Schemas["Binding"] | { type: null };
 
 export default function BindingScreen(props: ScreenProps & {
     bindings: Binding[] | null;
+    onSave: () => unknown;
 }) {
     const [listening, setListening] = useState(-1);
     const tick = ticker();
-    const { bindings } = props;
+    const { bindings, onSave } = props;
     
-    startPollingJoypad();
+    if (listening == -1) onSave();
 
     useEffect(() => {
         function onContextMenu(event: Event) {
@@ -80,7 +82,6 @@ export default function BindingScreen(props: ScreenProps & {
             setListening(-1);
         }
         function onJoypadEvent({ payload: event }: TauriEvent<JoypadEvent>) {
-            console.log(event);
             if (listening == -1 || !bindings) return;
             bindings[listening] = event.type == "button" ? {
                 type: "joypad_button",
@@ -111,68 +112,62 @@ export default function BindingScreen(props: ScreenProps & {
 
     return (
         <Screen {...props}>
-                <ul className="list">
-                    {bindings && bindings.map((binding, index) => (
-                        <li className="list-item">
-                            <div class="flex">
-                                <div
-                                    className="link"
-                                    onMouseUp={listening == -1 ? e => {
-                                        startPollingJoypad();
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setListening(index);
-                                    } : undefined}
-                                >
-                                    {binding.type ? humanizeBinding(binding) : "Click to select"}
-                                </div>
-                                {listening == index && <div>
-                                    <span className="small">
-                                        Listening for inputs...
-                                    </span>
-                                    {" "}
-                                    <span
-                                        className="small link"
-                                        onMouseUp={e => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            setListening(-1);
-                                        }}
-                                    >
-                                        Cancel
-                                    </span>
-                                </div>}
+            <ul className="list">
+                {bindings && bindings.map((binding, index) => (
+                    <li className="list-item">
+                        <div className="flex">
+                            <div
+                                className="link"
+                                onMouseUp={listening == -1 ? event => {
+                                    startPollingJoypad();
+                                    stopEvent(event);
+                                    setListening(index);
+                                } : undefined}
+                            >
+                                {binding.type ? humanizeBinding(binding) : "Click to select"}
                             </div>
-                            {binding.type && (binding.type == "key" || binding.type == "mouse" || binding.type == "mouse_wheel") ?
-                                (["alt", "shift", "ctrl", "meta"] as const).map(prop => (
-                                    <div>
-                                        <input
-                                            type="checkbox"
-                                            checked={binding[prop]}
-                                            onChange={event => {
-                                                binding[prop] = event.currentTarget.checked;
-                                                tick();
-                                            }}
-                                        />
-                                        {" "}
-                                        {capitalize(prop)}
-                                    </div>
-                                )) : Array(4).fill(0).map(() => <div />)
-                            }
-                            <div>
-                                <img
-                                    className="icon button"
-                                    onMouseUp={() => {
-                                        bindings.splice(index, 1);
+                            {listening == index && <div>
+                                <span className="small">
+                                    Listening for inputs...
+                                </span>
+                                <span
+                                    className="small link"
+                                    onMouseUp={event => {
+                                        stopEvent(event);
                                         setListening(-1);
+                                    }}
+                                >
+                                    Cancel
+                                </span>
+                            </div>}
+                        </div>
+                        {binding.type && (binding.type == "key" || binding.type == "mouse" || binding.type == "mouse_wheel") ?
+                            (["alt", "shift", "ctrl", "meta"] as const).map(prop => <div className="flex gap-small">
+                                <input
+                                    type="checkbox"
+                                    checked={binding[prop]}
+                                    onChange={event => {
+                                        binding[prop] = event.currentTarget.checked;
                                         tick();
                                     }}
-                                    src={deleteIcon}
                                 />
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+                                {capitalize(prop)}
+                            </div>) : Array(4).fill(0).map(() => <div />)
+                        }
+                        <div>
+                            <img
+                                className="icon button"
+                                onMouseUp={() => {
+                                    bindings.splice(index, 1);
+                                    setListening(-1);
+                                    tick();
+                                }}
+                                src={deleteIcon}
+                            />
+                        </div>
+                    </li>
+                ))}
+            </ul>
             <div className="flex vertical">
                 <div
                     className="flex button"

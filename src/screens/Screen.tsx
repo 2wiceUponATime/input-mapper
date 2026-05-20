@@ -1,5 +1,6 @@
 import { ComponentChildren } from "preact"
 import back from "@/assets/icons/back.svg"
+import { stopEvent } from "@/utils/events";
 
 export interface ScreenProps {
     children?: ComponentChildren;
@@ -12,8 +13,7 @@ export default function Screen({ children, title, onClose }: ScreenProps) {
         <div className="screen">
             <div className="flex">
                 <img className="icon button" src={back} onMouseUp={event => {
-                    event.preventDefault();
-                    event.stopPropagation();
+                    stopEvent(event);
                     onClose && onClose();
                 }} />
                 {title && <h1>{title}</h1>}

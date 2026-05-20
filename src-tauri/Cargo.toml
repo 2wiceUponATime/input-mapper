@@ -1,6 +1,6 @@
 [package]
 name = "input-mapper"
-version = "0.2.0"
+version = "0.3.0"
 description = "Configure input bindings"
 authors = ["2wiceUponATime"]
 edition = "2021"

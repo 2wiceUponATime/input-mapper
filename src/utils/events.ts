@@ -1,4 +1,3 @@
-import { useState } from "preact/hooks";
 
 export function isModifierKey(e: KeyboardEvent): boolean {
     return ['Alt', 'AltGraph', 'CapsLock', 'Control', 'Fn', 'FnLock',
@@ -6,7 +5,7 @@ export function isModifierKey(e: KeyboardEvent): boolean {
         'Symbol', 'SymbolLock'].includes(e.key);
 }
 
-export function ticker() {
-    const [tick, setTick] = useState(0);
-    return () => setTick(tick + 1);
+export function stopEvent(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
 }

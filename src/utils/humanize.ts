@@ -40,7 +40,7 @@ function humanizeKey(code: string) {
 export function humanizeBinding(binding: Schemas["Binding"]) {
     switch (binding.type) {
         case "key":
-            return `${getPrefix(binding)}${humanizeKey(binding.name)} (QWERTY position)`
+            return `${getPrefix(binding)}${humanizeKey(binding.name)} (QWERTY key position)`
         case "mouse":
             const prefix = getPrefix(binding);
             switch (binding.index) {
