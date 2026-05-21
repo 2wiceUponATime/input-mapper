@@ -3,7 +3,7 @@ import create from "@/assets/icons/create.svg";
 import deleteIcon from "@/assets/icons/delete.svg";
 import edit from "@/assets/icons/edit.svg";
 import forward from "@/assets/icons/forward.svg";
-import { useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import type { Schemas } from "@/schemas";
 import BindingSetScreen from "./BindingSet";
 import { stopEvent } from "@/utils/events";
@@ -18,7 +18,13 @@ export default function GameScreen(props: ScreenProps & {
     const [bindingSetScreen, setBindingSetScreen] = useState<
         [string, Schemas["BindingSet"]] | null
     >(null);
+    const [editName, setEditName] = useState(-1);
     const tick = ticker();
+    const editRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (editRef.current) editRef.current.focus();
+    }, [editName]);
 
     const { appConfig, inputConfig, onSave } = props;
 
@@ -41,7 +47,26 @@ export default function GameScreen(props: ScreenProps & {
                         className="list-item"
                         onClick={() => setBindingSetScreen(entry)}
                     >
-                        <div className="link">{entry[0]}</div>
+                        {editName === index
+                            ? <input
+                                type="text"
+                                value={entry[0]}
+                                ref={editRef}
+                                onClick={event => event.stopPropagation()}
+                                onBlur={event => {
+                                    entry[0] = event.currentTarget.value;
+                                    setEditName(-1);
+                                    onSave();
+                                }}
+                                onKeyDown={event => {
+                                    if (!["Enter", "Escape"].includes(event.key)) return;
+                                    entry[0] = event.currentTarget.value;
+                                    setEditName(-1);
+                                    onSave();
+                                }}
+                            />
+                            : <div className="link">{entry[0]}</div>
+                        }
                         <div className="flex gap-small">
                             <input
                                 type="checkbox"
@@ -64,11 +89,7 @@ export default function GameScreen(props: ScreenProps & {
                             src={edit}
                             onClick={event => {
                                 stopEvent(event);
-                                entry[0] = prompt(
-                                    "Enter new name",
-                                    entry[0],
-                                ) ?? entry[0];
-                                onSave();
+                                setEditName(index);
                                 tick();
                             }}
                         />
