@@ -1,11 +1,11 @@
 import type { Schemas } from "@/schemas";
 
-const axis: Record<number, string> = {
+const axis = {
     [-1]: "Negative",
       1 : "Positive",
 }
 
-const axisXY: Record<string, Record<number, string>> = {
+const axisXY: Record<string, typeof axis> = {
     X: {
         [-1]: "Left",
         1 : "Right",

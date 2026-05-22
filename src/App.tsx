@@ -4,8 +4,10 @@ import GameScreen from "./screens/Game";
 import { list, readJSON, writeJSON } from "./commands";
 import schemas, { type Schemas } from "./schemas";
 import forward from "./assets/icons/forward.svg";
+import { ZodError } from "zod";
+import { defaultBindings } from "./utils/utils";
 
-export type AppConfigs = Record<string, Schemas["AppConfig"]>;
+export type AppConfigs   = Record<string, Schemas["AppConfig"  ] | null>;
 export type InputConfigs = Record<string, Schemas["InputConfig"]>;
 
 async function getAppNames() {
@@ -18,7 +20,11 @@ async function getAppNames() {
 async function getAppConfigs(names: string[]) {
   const result: AppConfigs = {};
   for (const name of names) {
-    result[name] = await readJSON(`apps/${name}.json`, schemas.AppConfig);
+    try {
+      result[name] = await readJSON(`apps/${name}.json`, schemas.AppConfig);
+    } catch(_err) {
+      result[name] = null;
+    }
   }
   return result;
 }
@@ -26,6 +32,7 @@ async function getAppConfigs(names: string[]) {
 async function getInputConfigs(names: string[], appConfigs: AppConfigs) {
   const result: InputConfigs = {}
   for (const name of names) {
+    if (!appConfigs[name]) continue;
     try {
       result[name] = await readJSON(
         `configs/${name}.json`,
@@ -36,14 +43,17 @@ async function getInputConfigs(names: string[], appConfigs: AppConfigs) {
         typeof err === "string"
         && err.includes("No such file or directory")
       )) {
+        if (err instanceof ZodError) {
+          result[name] = {
+            sets: [defaultBindings(appConfigs[name])],
+            active_set: 0,
+          };
+          continue;
+        }
         throw err;
       }
-      const bindingSet = Object.fromEntries(
-        Object.entries(appConfigs[name].actions)
-          .map(([k, v]) => [k, v.default])
-      )
       result[name] = {
-        sets: [["Default", bindingSet]],
+        sets: [defaultBindings(appConfigs[name])],
         active_set: 0,
       }
     }
@@ -65,24 +75,38 @@ export default function App() {
 
   useEffect(() => { main(); }, []);
 
+  const appConfig   = gameScreen !== null && appConfigs
+    ? (appConfigs  [gameScreen] as Schemas["AppConfig"  ])
+    : null;
+  const inputConfig = gameScreen !== null && inputConfigs
+    ? (inputConfigs[gameScreen])
+    : null;
+
   return (
     <main className="screen">
       <h1>Apps</ h1>
       <ul className="list">
-        {appConfigs && Object.entries(appConfigs).map(([name, config]) => (
-          <li
-            className="list-item link"
-            onClick={() => setGameScreen(name)}
+        {appConfigs && Object.entries(appConfigs).map(([name, config]) => config
+          ? <li
+              className="list-item link"
+              onClick={() => setGameScreen(name)}
           >
             <div>{config.name}</div>
             <img className="icon button" src={forward} />
           </li>
-        ))}
+          : <li
+              className="list-item error"
+          >
+            <div>
+            Error loading app configuration for "{name}"
+            </div>
+          </li>
+        )}
       </ul>
       {gameScreen && <GameScreen
-        title={appConfigs && `Binding sets: ${appConfigs[gameScreen].name}`}
-        appConfig  ={appConfigs   && appConfigs  [gameScreen]}
-        inputConfig={inputConfigs && inputConfigs[gameScreen]}
+        title={appConfig && `Binding sets: ${appConfig.name}`}
+        appConfig  ={appConfig  }
+        inputConfig={inputConfig}
         onClose={() => setGameScreen(null)}
         onSave={async () => {
           if (!inputConfigs) return;

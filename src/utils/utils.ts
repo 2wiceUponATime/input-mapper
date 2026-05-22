@@ -1,16 +1,21 @@
+import { Schemas } from "@/schemas";
 import { useState } from "preact/hooks";
 
 export function clamp(input: number, min: number, max: number) {
     return Math.min(Math.max(input, min), max);
 }
 
+/**
+ * Create a function that triggers a re-render.
+ */
 export function ticker() {
     const [tick, setTick] = useState(0);
     return () => setTick(tick + 1);
 }
 
 /**
- * Assumes all items in `arr` are unique.
+ * Move an item in an array. Assumes all items in `arr` are unique.
+ * @param new_index The new index relative to the pre-move array.
  */
 export function arrayMove<
     T extends any[]
@@ -25,4 +30,14 @@ export function arrayMove<
     const value = arr.splice(old_index, 1)[0];
     arr.splice(arr.indexOf(before) + 1, 0, value);
     return arr;
+}
+
+export function defaultBindings(config: Schemas["AppConfig"], name: string = "Default") {
+    return {
+        name,
+        set: Object.fromEntries(
+            Object.entries(config.actions)
+                .map(([k, v]) => [k, v.default])
+        ),
+    }
 }

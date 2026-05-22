@@ -3,7 +3,8 @@
   "type": "object",
   "properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "description": "The app name"
     },
     "actions": {
       "type": "object",
@@ -14,6 +15,7 @@
         "type": "object",
         "properties": {
           "name": {
+            "description": "Override the humanized input name",
             "type": "string"
           },
           "default": {
@@ -28,19 +30,24 @@
                       "const": "key"
                     },
                     "alt": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Alt key"
                     },
                     "shift": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Shift key"
                     },
                     "ctrl": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Ctrl key"
                     },
                     "meta": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Meta (Windows/Command/Super) key"
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The browser `KeyboardEvent.code` value that corresponds with the binding"
                     }
                   },
                   "required": [
@@ -61,21 +68,26 @@
                       "const": "mouse"
                     },
                     "alt": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Alt key"
                     },
                     "shift": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Shift key"
                     },
                     "ctrl": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Ctrl key"
                     },
                     "meta": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Meta (Windows/Command/Super) key"
                     },
                     "index": {
                       "type": "integer",
                       "minimum": 0,
-                      "maximum": 9007199254740991
+                      "maximum": 9007199254740991,
+                      "description": "The browser `MouseEvent.button` value that corresponds with the binding"
                     }
                   },
                   "required": [
@@ -96,16 +108,20 @@
                       "const": "mouse_wheel"
                     },
                     "alt": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Alt key"
                     },
                     "shift": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Shift key"
                     },
                     "ctrl": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Ctrl key"
                     },
                     "meta": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If the binding uses the Meta (Windows/Command/Super) key"
                     },
                     "direction": {
                       "type": "string",
@@ -135,7 +151,29 @@
                       "const": "joypad_button"
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "enum": [
+                        "South",
+                        "East",
+                        "North",
+                        "West",
+                        "C",
+                        "Z",
+                        "LeftTrigger",
+                        "LeftTrigger2",
+                        "RightTrigger",
+                        "RightTrigger2",
+                        "Select",
+                        "Start",
+                        "Mode",
+                        "LeftThumb",
+                        "RightThumb",
+                        "DPadUp",
+                        "DPadDown",
+                        "DPadLeft",
+                        "DPadRight",
+                        "Unknown"
+                      ]
                     }
                   },
                   "required": [
@@ -152,7 +190,18 @@
                       "const": "joypad_axis"
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "enum": [
+                        "LeftStickX",
+                        "LeftStickY",
+                        "LeftZ",
+                        "RightStickX",
+                        "RightStickY",
+                        "RightZ",
+                        "DPadX",
+                        "DPadY",
+                        "Unknown"
+                      ]
                     },
                     "direction": {
                       "anyOf": [
@@ -164,7 +213,8 @@
                           "type": "number",
                           "const": 1
                         }
-                      ]
+                      ],
+                      "description": "Negative is left for X and down for Y; positive is the opposite."
                     }
                   },
                   "required": [
@@ -175,7 +225,8 @@
                   "additionalProperties": false
                 }
               ]
-            }
+            },
+            "description": "The default set of bindings for the action"
           }
         },
         "required": [

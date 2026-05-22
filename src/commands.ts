@@ -1,18 +1,13 @@
 import type { z } from "zod";
 import { invoke } from "@tauri-apps/api/core"
-
-type SideX = "Left" | "Right";
-type SideY = "Up" | "Down";
-type Axis = "X" | "Y";
+import { JoypadAxis, JoypadButton } from "./schemas";
 
 export type JoypadEvent = {
     type: "button";
-    value: "South" | "East" | "North" | "West" | "C" | "Z"
-        | `${SideX}Trigger${"" | "2"}` | "Select" | "Start" | "Mode"
-        | `${SideX}Thumb` | `DPad${SideX | SideY}` | "Unknown";
+    value: JoypadButton;
 } | {
     type: "axis";
-    value: `${SideX}Stick${Axis}` | `${SideX}Z` | `DPad${Axis}` | "Unknown";
+    value: JoypadAxis;
     direction: number;
 }
 

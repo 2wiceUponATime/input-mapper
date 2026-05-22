@@ -3,6 +3,7 @@
   --background-2: #b0b0b0;
   --foreground: black;
   --foreground-2: #505050;
+  --foreground-err: #ff0000;
   --margin: 10px;
 }
 
@@ -115,6 +116,10 @@ table:has(.list) {
 .small {
   font-size: 0.8em;
   color: var(--foreground-2);
+}
+
+.error {
+  color: var(--foreground-err);
 }
 
 .vertical {

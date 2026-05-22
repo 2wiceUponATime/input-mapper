@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import type { Schemas } from "@/schemas";
 import BindingSetScreen from "./BindingSet";
 import { stopEvent } from "@/utils/events";
-import { ticker } from "@/utils/utils";
+import { defaultBindings, ticker } from "@/utils/utils";
 import { clamp } from "@/utils/utils";
 
 export default function GameScreen(props: ScreenProps & {
@@ -16,7 +16,7 @@ export default function GameScreen(props: ScreenProps & {
     onSave: () => unknown;
 }) {
     const [bindingSetScreen, setBindingSetScreen] = useState<
-        [string, Schemas["BindingSet"]] | null
+        Schemas["InputConfig"]["sets"][number] | null
     >(null);
     const [editName, setEditName] = useState(-1);
     const tick = ticker();
@@ -33,9 +33,9 @@ export default function GameScreen(props: ScreenProps & {
             inputConfig.active_set,
             0, inputConfig.sets.length - 1
         );
-        if (inputConfig.active_set != clamped) {
+        if (inputConfig.active_set !== clamped) {
             inputConfig.active_set = clamped;
-            return;
+            tick();
         }
     }
 
@@ -50,22 +50,22 @@ export default function GameScreen(props: ScreenProps & {
                         {editName === index
                             ? <input
                                 type="text"
-                                value={entry[0]}
+                                value={entry.name}
                                 ref={editRef}
                                 onClick={event => event.stopPropagation()}
                                 onBlur={event => {
-                                    entry[0] = event.currentTarget.value;
+                                    entry.name = event.currentTarget.value;
                                     setEditName(-1);
                                     onSave();
                                 }}
                                 onKeyDown={event => {
                                     if (!["Enter", "Escape"].includes(event.key)) return;
-                                    entry[0] = event.currentTarget.value;
+                                    entry.name = event.currentTarget.value;
                                     setEditName(-1);
                                     onSave();
                                 }}
                             />
-                            : <div className="link">{entry[0]}</div>
+                            : <div className="link">{entry.name}</div>
                         }
                         <div className="flex gap-small">
                             <input
@@ -103,12 +103,8 @@ export default function GameScreen(props: ScreenProps & {
                                 if (inputConfig.active_set === index) {
                                     inputConfig.active_set = 0;
                                     if (inputConfig.sets.length === 0) {
-                                        const set = Object.fromEntries(
-                                            Object.entries(appConfig.actions)
-                                            .map(([k, v]) => [k, v.default])
-                                        )
                                         inputConfig.sets
-                                            .push(["Default", set]);
+                                            .push(defaultBindings(appConfig));
                                         tick();
                                     }
                                 } else if (inputConfig.active_set > index) {
@@ -123,8 +119,9 @@ export default function GameScreen(props: ScreenProps & {
                 ))}
             </ul>
             {bindingSetScreen && <BindingSetScreen
-                title={`Bindings: ${bindingSetScreen[0]}`}
-                bindings={bindingSetScreen[1]}
+                title={`Bindings: ${bindingSetScreen.name}`}
+                appConfig={appConfig}
+                bindings={bindingSetScreen.set}
                 onClose={() => setBindingSetScreen(null)}
                 onSave={onSave}
             />}
@@ -134,11 +131,10 @@ export default function GameScreen(props: ScreenProps & {
                     className="flex button"
                     onClick={() => {
                         if (!appConfig || !inputConfig) return;
-                        const set = Object.fromEntries(
-                            Object.entries(appConfig.actions)
-                            .map(([k, v]) => [k, v.default])
-                        )
-                        inputConfig.sets.push(["New Binding Set", set]);
+                        inputConfig.sets.push(defaultBindings(
+                            appConfig,
+                            "New Binding Set",
+                        ));
                         tick();
                     }}
                 >

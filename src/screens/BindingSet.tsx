@@ -6,13 +6,14 @@ import BindingScreen from "./Binding";
 import { humanizeSnakeCase } from "@/utils/humanize";
 
 export default function BindingSetScreen(props: ScreenProps & {
-    bindings: Schemas["BindingSet"] | null;
+    appConfig: Schemas["AppConfig" ] | null;
+    bindings : Schemas["BindingSet"] | null;
     onSave: () => unknown;
 }) {
     const [bindingScreen, setBindingScreen] = useState<
         [string, Schemas["Binding"][]] | null
     >(null)
-    const { bindings, onSave } = props;
+    const { appConfig, bindings, onSave } = props;
 
     return (
         <Screen {...props}>
@@ -24,7 +25,10 @@ export default function BindingSetScreen(props: ScreenProps & {
                             className="list-item link"
                             onClick={() => setBindingScreen([name, bindings])}
                         >
-                            <div>{humanizeSnakeCase(name)}</div>
+                            <div>
+                                {appConfig?.actions[name].name
+                                    ?? humanizeSnakeCase(name)}
+                            </div>
                             <img className="icon button" src={forward} />
                         </li>
                     ))
